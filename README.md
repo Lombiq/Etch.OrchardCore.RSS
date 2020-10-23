@@ -4,6 +4,8 @@ Extends RSS feed to include meta title, image and description.
 
 ## Build Status
 
+[![Build Status](https://secure.travis-ci.org/etchuk/Etch.OrchardCore.RSS.png?branch=master)](http://travis-ci.org/etchuk/Etch.OrchardCore.RSS) [![NuGet](https://img.shields.io/nuget/v/Etch.OrchardCore.RSS.svg)](https://www.nuget.org/packages/Etch.OrchardCore.RSS)
+
 ## Orchard Core Reference
 
 This module is referencing the RC1 build of Orchard Core ([`1.0.0-rc2-13450`](https://www.nuget.org/packages/OrchardCore.Module.Targets/1.0.0-rc2-13450)).
