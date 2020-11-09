@@ -1,0 +1,8 @@
+﻿@model Etch.OrchardCore.RSS.ViewModels.EditRssFeedViewModel
+
+@if (Model.ContentItem.Id != 0)
+{
+    <div class="form-group">
+        <span class="hint">@T["This feed is available at <a href=\"{0}\" target=\"_blank\">{0}</a>.", string.Format("{0}/rss/{1}", Context.Request.PathBase, Model.ContentItem.ContentItemId, Context.Request.Scheme)]</span>
+    </div>
+}

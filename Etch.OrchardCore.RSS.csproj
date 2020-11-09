@@ -12,12 +12,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Etch.OrchardCore.Fields" Version="0.10.0-rc2" />
     <PackageReference Include="OrchardCore.ContentManagement" Version="1.0.0-rc2-13450" />
     <PackageReference Include="OrchardCore.DisplayManagement" Version="1.0.0-rc2-13450" />
     <PackageReference Include="OrchardCore.ResourceManagement" Version="1.0.0-rc2-13450" />
     <PackageReference Include="OrchardCore.Module.Targets" Version="1.0.0-rc2-13450" />
     <PackageReference Include="OrchardCore.Feeds" Version="1.0.0-rc2-13450" />
     <PackageReference Include="Etch.OrchardCore.SEO" Version="0.6.1-rc2" />
+    <PackageReference Include="OrchardCore.Title" Version="1.0.0-rc2-13450" />
   </ItemGroup>
 
   <ItemGroup>

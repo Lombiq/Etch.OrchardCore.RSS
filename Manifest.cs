@@ -14,5 +14,5 @@ using OrchardCore.Modules.Manifest;
     Name = "RSS",
     Description = "RSS feed to include meta title, image and description.",
     Category = "Content",
-    Dependencies = new[] { "Etch.OrchardCore.SEO.MetaTags" }
+    Dependencies = new[] { "Etch.OrchardCore.Fields.Query", "Etch.OrchardCore.SEO.MetaTags", "OrchardCore.Title" }
 )]
