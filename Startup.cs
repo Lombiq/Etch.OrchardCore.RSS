@@ -1,5 +1,4 @@
-﻿using Etch.OrchardCore.RSS.Contents;
-using Etch.OrchardCore.RSS.Controllers;
+﻿using Etch.OrchardCore.RSS.Controllers;
 using Etch.OrchardCore.RSS.Drivers;
 using Etch.OrchardCore.RSS.Models;
 using Microsoft.AspNetCore.Builder;
@@ -8,13 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Feeds;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Navigation;
-using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using System;
 
 namespace Etch.OrchardCore.RSS
@@ -26,17 +20,10 @@ namespace Etch.OrchardCore.RSS
             services.AddContentPart<RssFeed>()
                 .UseDisplayDriver<RssFeedDisplayDriver>();
 
-            services.AddScoped<IDisplayDriver<ISite>, RSSFeedSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-
             services.AddScoped<IDataMigration, Migrations>();
-
-            // Feeds
-            services.AddScoped<IFeedItemBuilder, Feeds>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
                 name: "Rss.Feed",
