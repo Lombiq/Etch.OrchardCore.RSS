@@ -1,16 +1,7 @@
-﻿using Etch.OrchardCore.Fields.Query.Fields;
-using Etch.OrchardCore.RSS.Services;
+﻿using Etch.OrchardCore.RSS.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
-using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
-using OrchardCore.Queries;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Etch.OrchardCore.RSS.Controllers
 {

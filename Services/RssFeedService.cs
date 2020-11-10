@@ -1,9 +1,14 @@
 ﻿using Etch.OrchardCore.Fields.Query.Fields;
+using Etch.OrchardCore.RSS.Extensions;
+using Etch.OrchardCore.SEO.MetaTags.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.StaticFiles;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Models;
+using OrchardCore.Media;
 using OrchardCore.Queries;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +23,7 @@ namespace Etch.OrchardCore.RSS.Services
 
         private readonly IContentManager _contentManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMediaFileStore _mediaFileStore;
         private readonly IQueryManager _queryManager;
         private readonly IUrlHelperFactory _urlHelperFactory;
 
@@ -25,10 +31,11 @@ namespace Etch.OrchardCore.RSS.Services
 
         #region Constructor
 
-        public RssFeedService(IContentManager contentManager, IHttpContextAccessor httpContextAccessor, IQueryManager queryManager, IUrlHelperFactory urlHelperFactory)
+        public RssFeedService(IContentManager contentManager, IHttpContextAccessor httpContextAccessor, IMediaFileStore mediaFileStore, IQueryManager queryManager, IUrlHelperFactory urlHelperFactory)
         {
             _contentManager = contentManager;
             _httpContextAccessor = httpContextAccessor;
+            _mediaFileStore = mediaFileStore;
             _queryManager = queryManager;
             _urlHelperFactory = urlHelperFactory;
         }
@@ -80,15 +87,24 @@ namespace Etch.OrchardCore.RSS.Services
             var request = _httpContextAccessor.HttpContext.Request;
             var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
 
+            var bodyAspect = await _contentManager.PopulateAspectAsync<BodyAspect>(contentItem);
             var metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
             var url = $"{request.Scheme}://{request.Host}{urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues)}";
 
             var item = new XElement("item");
 
-            item.Add(new XElement("title", contentItem.DisplayText));
+            item.Add(new XElement("title", contentItem.GetTitle()));
+            item.Add(new XElement("description", contentItem.GetDescription(bodyAspect)));
             item.Add(new XElement("link", url));
             item.Add(new XElement("guid", new XAttribute("isPermaLink", "true"), url));
             item.Add(new XElement("pubDate", contentItem.PublishedUtc.Value.ToString("r")));
+
+            var enclosure = GetEnclosure(contentItem);
+
+            if (enclosure != null)
+            {
+                item.Add(enclosure);
+            }
 
             return item;
         }
@@ -96,6 +112,45 @@ namespace Etch.OrchardCore.RSS.Services
         protected async Task<IList<XElement>> CreateItemsAsync(IEnumerable<ContentItem> contentItems, ActionContext actionContext)
         {
             return await Task.WhenAll(contentItems.Select(x => CreateItemAsync(x, actionContext)));
+        }
+
+        private XElement GetEnclosure(ContentItem contentItem)
+        {
+            var metaTag = contentItem.As<MetaTagsPart>();
+
+            if (metaTag == null)
+            {
+                return null;
+            }
+
+            return new XElement("enclosure", new XAttribute[] {
+                new XAttribute("url", GetMediaUrl(metaTag.Images[0])),
+                new XAttribute("type", GetMimeType(metaTag.Images[0])),
+            });
+        }
+
+        private string GetHostUrl()
+        {
+            var request = _httpContextAccessor.HttpContext.Request;
+            return $"{request.Scheme}://{request.Host}";
+        }
+
+        public string GetMediaUrl(string path)
+        {
+            var imageUrl = _mediaFileStore.MapPathToPublicUrl(path);
+            return imageUrl.StartsWith("http") ? imageUrl : $"{GetHostUrl()}{imageUrl}";
+        }
+
+        private string GetMimeType(string fileName)
+        {
+            var provider = new FileExtensionContentTypeProvider();
+
+            if (!provider.TryGetContentType(fileName, out string contentType))
+            {
+                contentType = "application/octet-stream";
+            }
+
+            return contentType;
         }
 
         #endregion
