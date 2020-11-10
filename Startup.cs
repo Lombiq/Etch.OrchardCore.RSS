@@ -1,6 +1,7 @@
 ﻿using Etch.OrchardCore.RSS.Controllers;
 using Etch.OrchardCore.RSS.Drivers;
 using Etch.OrchardCore.RSS.Models;
+using Etch.OrchardCore.RSS.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,8 @@ namespace Etch.OrchardCore.RSS
                 .UseDisplayDriver<RssFeedDisplayDriver>();
 
             services.AddScoped<IDataMigration, Migrations>();
+
+            services.AddScoped<IRssFeedService, RssFeedService>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
