@@ -8,6 +8,7 @@
         public const string RSSFeedContentTypeDisplayName = "RSS Feed";
 
         public const string DescriptionFieldName = "Description";
+        public const string Delay = "Delay";
         public const string LinkFieldName = "Link";
         public const string SourceFieldName = "Source";
     }

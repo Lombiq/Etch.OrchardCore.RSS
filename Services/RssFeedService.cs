@@ -9,6 +9,7 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Media;
+using OrchardCore.Modules;
 using OrchardCore.Queries;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace Etch.OrchardCore.RSS.Services
     {
         #region Dependencies
 
+        private readonly IClock _clock;
         private readonly IContentManager _contentManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMediaFileStore _mediaFileStore;
@@ -31,8 +33,9 @@ namespace Etch.OrchardCore.RSS.Services
 
         #region Constructor
 
-        public RssFeedService(IContentManager contentManager, IHttpContextAccessor httpContextAccessor, IMediaFileStore mediaFileStore, IQueryManager queryManager, IUrlHelperFactory urlHelperFactory)
+        public RssFeedService(IClock clock, IContentManager contentManager, IHttpContextAccessor httpContextAccessor, IMediaFileStore mediaFileStore, IQueryManager queryManager, IUrlHelperFactory urlHelperFactory)
         {
+            _clock = clock;
             _contentManager = contentManager;
             _httpContextAccessor = httpContextAccessor;
             _mediaFileStore = mediaFileStore;
@@ -52,7 +55,7 @@ namespace Etch.OrchardCore.RSS.Services
             var rss = new XElement("rss", new XAttribute("version", "2.0"), new XAttribute(XNamespace.Xmlns + "atom", "http://www.w3.org/2005/Atom"));
 
             rss.Add(CreateChannelMeta(contentItem));
-            rss.Add(await CreateItemsAsync(results.Items.Cast<ContentItem>(), actionContext));
+            rss.Add(await CreateItemsAsync(contentItem, results.Items.Cast<ContentItem>(), actionContext));
 
             return new XDocument(new XDeclaration("1.0", "utf-8", "yes"), rss);
         }
@@ -109,9 +112,11 @@ namespace Etch.OrchardCore.RSS.Services
             return item;
         }
 
-        protected async Task<IList<XElement>> CreateItemsAsync(IEnumerable<ContentItem> contentItems, ActionContext actionContext)
+        protected async Task<IList<XElement>> CreateItemsAsync(ContentItem contentItem, IEnumerable<ContentItem> contentItems, ActionContext actionContext)
         {
-            return await Task.WhenAll(contentItems.Select(x => CreateItemAsync(x, actionContext)));
+            var delay = contentItem.Get<ContentPart>(Constants.RSSFeedContentType)?.Get<NumericField>(Constants.Delay)?.Value ?? 0;
+
+            return await Task.WhenAll(contentItems.Where(x => ShouldInclude(x, delay)).Select(x => CreateItemAsync(x, actionContext)));
         }
 
         private XElement GetEnclosure(ContentItem contentItem)
@@ -151,6 +156,16 @@ namespace Etch.OrchardCore.RSS.Services
             }
 
             return contentType;
+        }
+
+        private bool ShouldInclude(ContentItem contentItem, decimal delay)
+        {
+            if (delay == 0)
+            {
+                return true;
+            }
+
+            return contentItem.PublishedUtc.Value.AddMinutes(double.Parse(delay.ToString())) < _clock.UtcNow;
         }
 
         #endregion

@@ -70,5 +70,23 @@ namespace Etch.OrchardCore.RSS
 
             return 2;
         }
+
+        public int UpdateFrom2()
+        {
+            _contentDefinitionManager.AlterPartDefinition(Constants.RSSFeedContentType, part => part
+                .WithField(Constants.Delay, field => field
+                    .OfType(nameof(NumericField))
+                    .WithDisplayName(Constants.Delay)
+                    .WithSettings(new NumericFieldSettings
+                    {
+                        DefaultValue = "0",
+                        Hint = "Delay when published content items appear in feed. Specify delay in minutes.",
+                        Minimum = 0
+                    })
+                )
+            );
+
+            return 3;
+        }
     }
 }
