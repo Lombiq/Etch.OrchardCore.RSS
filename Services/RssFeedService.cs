@@ -9,6 +9,7 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Media;
+using OrchardCore.Media.Fields;
 using OrchardCore.Modules;
 using OrchardCore.Queries;
 using System.Collections.Generic;
@@ -49,8 +50,8 @@ namespace Etch.OrchardCore.RSS.Services
 
         public async Task<XDocument> CreateFeedAsync(ContentItem contentItem, ActionContext actionContext)
         {
-            var contentPart = contentItem.Get<ContentPart>(Constants.RSSFeedContentType);
-            var query = await _queryManager.GetQueryAsync(contentPart?.Get<QueryField>(Constants.SourceFieldName)?.Value);
+            var contentPart = contentItem.Get<ContentPart>(Constants.RssFeed.ContentType);
+            var query = await _queryManager.GetQueryAsync(contentPart?.Get<QueryField>(Constants.RssFeed.SourceFieldName)?.Value);
             var results = await _queryManager.ExecuteQueryAsync(query, null);
             var rss = new XElement("rss", new XAttribute("version", "2.0"), new XAttribute(XNamespace.Xmlns + "atom", "http://www.w3.org/2005/Atom"));
 
@@ -66,7 +67,7 @@ namespace Etch.OrchardCore.RSS.Services
 
         protected IList<XElement> CreateChannelMeta(ContentItem contentItem)
         {
-            var contentPart = contentItem.Get<ContentPart>(Constants.RSSFeedContentType);
+            var contentPart = contentItem.Get<ContentPart>(Constants.RssFeed.ContentType);
             var request = _httpContextAccessor.HttpContext.Request;
 
             XNamespace atom = "http://www.w3.org/2005/Atom";
@@ -80,8 +81,8 @@ namespace Etch.OrchardCore.RSS.Services
             {
                 atomLink,
                 new XElement("title", contentItem.DisplayText),
-                new XElement("link", contentPart?.Get<TextField>(Constants.LinkFieldName)?.Text),
-                new XElement("description", contentPart?.Get<TextField>(Constants.DescriptionFieldName)?.Text)
+                new XElement("link", contentPart?.Get<TextField>(Constants.RssFeed.LinkFieldName)?.Text),
+                new XElement("description", contentPart?.Get<TextField>(Constants.RssFeed.DescriptionFieldName)?.Text)
             };
         }
 
@@ -114,23 +115,33 @@ namespace Etch.OrchardCore.RSS.Services
 
         protected async Task<IList<XElement>> CreateItemsAsync(ContentItem contentItem, IEnumerable<ContentItem> contentItems, ActionContext actionContext)
         {
-            var delay = contentItem.Get<ContentPart>(Constants.RSSFeedContentType)?.Get<NumericField>(Constants.Delay)?.Value ?? 0;
+            var delay = contentItem.Get<ContentPart>(Constants.RssFeed.ContentType)?.Get<NumericField>(Constants.RssFeed.DelayFieldName)?.Value ?? 0;
 
             return await Task.WhenAll(contentItems.Where(x => ShouldInclude(x, delay)).Select(x => CreateItemAsync(x, actionContext)));
         }
 
         private XElement GetEnclosure(ContentItem contentItem)
         {
-            var metaTag = contentItem.As<MetaTagsPart>();
+            string path = string.Empty;
 
-            if (metaTag == null)
+            if (contentItem.Get<ContentPart>(Constants.RssFeedItem.ContentPart) != null)
+            {
+                path = contentItem.Get<ContentPart>(Constants.RssFeedItem.ContentPart).Get<MediaField>(Constants.RssFeedItem.EnclosureFieldName).Paths.FirstOrDefault();
+            }
+
+            if (string.IsNullOrWhiteSpace(path) && contentItem.Has<MetaTagsPart>())
+            {
+                path = contentItem.As<MetaTagsPart>().Images.FirstOrDefault();
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
             {
                 return null;
             }
 
             return new XElement("enclosure", new XAttribute[] {
-                new XAttribute("url", GetMediaUrl(metaTag.Images[0])),
-                new XAttribute("type", GetMimeType(metaTag.Images[0])),
+                new XAttribute("url", GetMediaUrl(path)),
+                new XAttribute("type", GetMimeType(path)),
             });
         }
 

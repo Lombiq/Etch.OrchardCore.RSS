@@ -1,0 +1,27 @@
+{
+  "MediaField_Edit": [
+    {
+      "place": "Parts#RSS:3",
+      "differentiator": "RssFeedItemPart-Enclosure",
+      "contentPart": [
+        "RssFeedItemPart"
+      ]
+    }
+  ],
+  "TextField_Edit": [
+    {
+      "place": "Parts#RSS:1",
+      "differentiator": "RssFeedItemPart-Title",
+      "contentPart": [
+        "RssFeedItemPart"
+      ]
+    },
+    {
+      "place": "Parts#RSS:2",
+      "differentiator": "RssFeedItemPart-Description",
+      "contentPart": [
+        "RssFeedItemPart"
+      ]
+    }
+  ]
+}
