@@ -1,4 +1,10 @@
 {
+  "MediaField": [
+    {
+      "place": "-",
+      "differentiator": "RssFeedItemPart-Enclosure"
+    }
+  ],
   "MediaField_Edit": [
     {
       "place": "Parts#RSS:3",
@@ -6,6 +12,16 @@
       "contentPart": [
         "RssFeedItemPart"
       ]
+    }
+  ],
+  "TextField": [
+    {
+      "place": "-",
+      "differentiator": "RssFeedItemPart-Title"
+    },
+    {
+      "place": "-",
+      "differentiator": "RssFeedItemPart-Description"
     }
   ],
   "TextField_Edit": [
