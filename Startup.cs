@@ -21,6 +21,9 @@ namespace Etch.OrchardCore.RSS
             services.AddContentPart<RssFeed>()
                 .UseDisplayDriver<RssFeedDisplayDriver>();
 
+            services.AddContentPart<RssFeedItemPart>()
+               .UseDisplayDriver<RssFeedItemPartDisplayDriver>();
+
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IRssFeedService, RssFeedService>();
