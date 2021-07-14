@@ -52,7 +52,7 @@ namespace Etch.OrchardCore.RSS.Services
         {
             var contentPart = contentItem.Get<ContentPart>(Constants.RssFeed.ContentType);
             var query = await _queryManager.GetQueryAsync(contentPart?.Get<QueryField>(Constants.RssFeed.SourceFieldName)?.Value);
-            var results = await _queryManager.ExecuteQueryAsync(query, null);
+            var results = await _queryManager.ExecuteQueryAsync(query, new Dictionary<string, object>());
             var rss = new XElement("rss", new XAttribute("version", "2.0"), new XAttribute(XNamespace.Xmlns + "atom", "http://www.w3.org/2005/Atom"));
 
             rss.Add(CreateChannelMeta(contentItem));
@@ -157,7 +157,7 @@ namespace Etch.OrchardCore.RSS.Services
             return imageUrl.StartsWith("http") ? imageUrl : $"{GetHostUrl()}{imageUrl}";
         }
 
-        private string GetMimeType(string fileName)
+        private static string GetMimeType(string fileName)
         {
             var provider = new FileExtensionContentTypeProvider();
 
