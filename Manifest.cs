@@ -5,7 +5,7 @@ using OrchardCore.Modules.Manifest;
     Category = "Content",
     Description = "RSS feed to include meta title, image and description.",
     Name = "RSS",
-    Version = "1.0.0",
+    Version = "1.1.0",
     Website = "https://etchuk.com"
 )]
 
