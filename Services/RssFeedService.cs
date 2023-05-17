@@ -126,12 +126,12 @@ namespace Etch.OrchardCore.RSS.Services
 
             if (contentItem.Get<ContentPart>(Constants.RssFeedItem.ContentPart) != null)
             {
-                path = contentItem.Get<ContentPart>(Constants.RssFeedItem.ContentPart).Get<MediaField>(Constants.RssFeedItem.EnclosureFieldName).Paths.FirstOrDefault();
+                path = contentItem.Get<ContentPart>(Constants.RssFeedItem.ContentPart).Get<MediaField>(Constants.RssFeedItem.EnclosureFieldName).Paths?.FirstOrDefault() ?? string.Empty;
             }
 
             if (string.IsNullOrWhiteSpace(path) && contentItem.Has<MetaTagsPart>())
             {
-                path = contentItem.As<MetaTagsPart>().Images.FirstOrDefault();
+                path = contentItem.As<MetaTagsPart>().Images?.FirstOrDefault() ?? string.Empty;
             }
 
             if (string.IsNullOrWhiteSpace(path))
