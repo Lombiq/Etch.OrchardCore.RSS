@@ -54,9 +54,11 @@ namespace Etch.OrchardCore.RSS.Services
             var query = await _queryManager.GetQueryAsync(contentPart?.Get<QueryField>(Constants.RssFeed.SourceFieldName)?.Value);
             var results = await _queryManager.ExecuteQueryAsync(query, new Dictionary<string, object>());
             var rss = new XElement("rss", new XAttribute("version", "2.0"), new XAttribute(XNamespace.Xmlns + "atom", "http://www.w3.org/2005/Atom"));
+            var channel = new XElement("channel");
 
-            rss.Add(CreateChannelMeta(contentItem));
-            rss.Add(await CreateItemsAsync(contentItem, results.Items.Cast<ContentItem>(), actionContext));
+            rss.Add(channel);
+            channel.Add(CreateChannelMeta(contentItem));
+            channel.Add(await CreateItemsAsync(contentItem, results.Items.Cast<ContentItem>(), actionContext));
 
             return new XDocument(new XDeclaration("1.0", "utf-8", "yes"), rss);
         }
