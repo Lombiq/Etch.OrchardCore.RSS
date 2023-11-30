@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="Etch.OrchardCore.Fields" Version="1.6.0" />
-    <PackageReference Include="Etch.OrchardCore.SEO" Version="1.6.0" />
+    <PackageReference Include="Etch.OrchardCore.SEO" Version="1.7.0" />
     <PackageReference Include="OrchardCore.ContentManagement" Version="1.7.2" />
     <PackageReference Include="OrchardCore.DisplayManagement" Version="1.7.2" />
     <PackageReference Include="OrchardCore.ResourceManagement" Version="1.7.2" />
