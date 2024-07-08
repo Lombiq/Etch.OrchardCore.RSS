@@ -7,6 +7,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Settings;
 using OrchardCore.Title.Models;
+using System.Threading.Tasks;
 
 namespace Etch.OrchardCore.RSS
 {
@@ -19,20 +20,20 @@ namespace Etch.OrchardCore.RSS
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition(Constants.RssFeed.ContentType, part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync(Constants.RssFeed.ContentType, part => part
                 .WithDescription("Create an RSS feed of content.")
                 .WithDisplayName(Constants.RssFeed.DisplayName));
 
-            _contentDefinitionManager.AlterPartDefinition(Constants.RssFeed.ContentType, part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync(Constants.RssFeed.ContentType, part => part
                 .WithField(Constants.RssFeed.SourceFieldName, field => field
                     .OfType(nameof(QueryField))
                     .WithDisplayName(Constants.RssFeed.SourceFieldName)
                 )
             );
 
-            _contentDefinitionManager.AlterTypeDefinition(Constants.RssFeed.ContentType, type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync(Constants.RssFeed.ContentType, type => type
                 .Draftable()
                 .Versionable()
                 .Listable()
@@ -45,9 +46,9 @@ namespace Etch.OrchardCore.RSS
             return 1;
         }
 
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            _contentDefinitionManager.AlterPartDefinition(Constants.RssFeed.ContentType, part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync(Constants.RssFeed.ContentType, part => part
                 .WithField(Constants.RssFeed.LinkFieldName, field => field
                     .OfType(nameof(TextField))
                     .WithDisplayName(Constants.RssFeed.LinkFieldName)
@@ -58,7 +59,7 @@ namespace Etch.OrchardCore.RSS
                 )
             );
 
-            _contentDefinitionManager.AlterPartDefinition(Constants.RssFeed.ContentType, part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync(Constants.RssFeed.ContentType, part => part
                 .WithField(Constants.RssFeed.DescriptionFieldName, field => field
                     .OfType(nameof(TextField))
                     .WithDisplayName(Constants.RssFeed.DescriptionFieldName)
@@ -73,9 +74,9 @@ namespace Etch.OrchardCore.RSS
             return 2;
         }
 
-        public int UpdateFrom2()
+        public async Task<int> UpdateFrom2Async()
         {
-            _contentDefinitionManager.AlterPartDefinition(Constants.RssFeed.ContentType, part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync(Constants.RssFeed.ContentType, part => part
                 .WithField(Constants.RssFeed.DelayFieldName, field => field
                     .OfType(nameof(NumericField))
                     .WithDisplayName(Constants.RssFeed.DelayFieldName)
@@ -91,9 +92,9 @@ namespace Etch.OrchardCore.RSS
             return 3;
         }
 
-        public int UpdateFrom3()
+        public async Task<int> UpdateFrom3Async()
         {
-            _contentDefinitionManager.AlterPartDefinition(Constants.RssFeedItem.ContentPart, part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync(Constants.RssFeedItem.ContentPart, part => part
                 .WithDescription("Manage values for item element within RSS feed.")
                 .WithDisplayName("RSS Feed Item")
                 .Attachable()
